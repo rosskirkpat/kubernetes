@@ -27,6 +27,7 @@ readonly KUBE_SUPPORTED_SERVER_PLATFORMS=(
   linux/arm64
   linux/s390x
   linux/ppc64le
+  windows/amd64
 )
 
 # The node platforms we build for
@@ -213,6 +214,7 @@ kube::golang::setup_platforms() {
       # on any platform other than amd64 and arm64, we just default to amd64
       host_arch="amd64"
     fi
+    if [[ "${OSTYPE:-}" 
     KUBE_SERVER_PLATFORMS=("linux/${host_arch}")
     readonly KUBE_SERVER_PLATFORMS
     KUBE_NODE_PLATFORMS=("linux/${host_arch}")
@@ -409,6 +411,10 @@ kube::golang::set_platform_envs() {
     # If you want to include support for more server platforms than these, add arch-specific gcc names here
     case "${platform}" in
       "linux/amd64")
+        export CGO_ENABLED=1
+        export CC=${KUBE_LINUX_AMD64_CC:-x86_64-linux-gnu-gcc}
+        ;;
+      "windows/amd64")
         export CGO_ENABLED=1
         export CC=${KUBE_LINUX_AMD64_CC:-x86_64-linux-gnu-gcc}
         ;;
